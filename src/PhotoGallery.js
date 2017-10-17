@@ -1,6 +1,7 @@
 import React from 'react';
 import { FlatList, View, Dimensions } from 'react-native';
 
+import DetailsView from './DetailsView';
 import PhotoItem from './PhotoItem';
 
 import { processImages, buildRows, normalizeRows } from './utils';
@@ -10,6 +11,10 @@ import { DEVICE_WIDTH, BORDER_OFFSET } from './constants';
 import Images from './data';
 
 export default class PhotoGallery extends React.Component {
+	state = {
+		photo: null
+	}
+
 	componentWillMount() {
 		const processedImages = processImages(Images);
 		const builtRows = buildRows(processedImages, DEVICE_WIDTH);
@@ -17,8 +22,16 @@ export default class PhotoGallery extends React.Component {
 		this.rows = normalizeRows(builtRows, DEVICE_WIDTH);
 	}
 
-	_onPhotoOpen = (photoId) => {
-		console.log(photoId)
+	_onPhotoOpen = (photo) => {
+		this.setState({
+			photo
+		})
+	}
+
+	_onPhotoClose = () => {
+		this.setState({
+			photo: null
+		})
 	}
 
 	_keyExtractor = (item, index) => index;
@@ -44,6 +57,11 @@ export default class PhotoGallery extends React.Component {
 	}
 
 	render() {
-		return this._renderContent();
+		const { photo } = this.state;
+
+		return <View>
+			{this._renderContent()}
+			<DetailsView photo={photo} onPhotoClose={this._onPhotoClose} />
+		</View>
 	}
 }
